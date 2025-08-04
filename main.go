@@ -22,6 +22,7 @@ const (
 	tabStats
 	tabSettings
 	tabHelp
+	minHeight = 35
 )
 
 var (
@@ -150,6 +151,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.height > 0 && m.height < minHeight {
+		return "Window too small please resize"
+	}
 	header := renderTabs(m.currentTab)
 	body := renderTabContent(m)
 	rows := len(strings.Split(body, "\n"))
