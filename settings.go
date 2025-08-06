@@ -70,6 +70,7 @@ func (s *settings) viewSettings() string {
 		}
 		finalString += "\n"
 	}
+	finalString += "\n\n Enter to confirm and start new round"
 	return finalString
 }
 
@@ -89,6 +90,25 @@ func (m *model) updateSettings(key string) *typing {
 		setting.position += 1
 		if setting.position == len(setting.options) {
 			setting.position = 0
+		}
+
+		m.updateSettingsValues()
+		var gc int
+		if m.typingTab.gameMode == gameModeCountdown {
+			gc = m.settingsTab.time
+		} else {
+			gc = m.settingsTab.count
+		}
+
+		newTypingTab := &typing{gameMode: m.settingsTab.mode, gameCount: gc}
+		newTypingTab.initTyping()
+		return newTypingTab
+	case "up":
+		// get the setting tab
+		setting := s.sets[s.active]
+		setting.position -= 1
+		if setting.position == -1 {
+			setting.position = len(setting.options) - 1
 		}
 
 		m.updateSettingsValues()

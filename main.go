@@ -19,7 +19,6 @@ type tab int
 
 const (
 	tabTyping tab = iota
-	tabStats
 	tabSettings
 	tabHelp
 	minHeight = 17
@@ -33,17 +32,16 @@ var (
 
 	borderStyleDefault lipgloss.Style = lipgloss.NewStyle().
 				Border(lipgloss.RoundedBorder()).
-				BorderForeground(lipgloss.Color("1")).
+				BorderForeground(lipgloss.Color("#616060")).
 				Padding(1, 2)
 )
 
-var tabNames = []string{"Typing", "Stats", "Settings", "Help"}
+var tabNames = []string{"Typing", "Settings", "Help"}
 
 type model struct {
 	currentTab  tab
 	width       int
 	height      int
-	textarea    textarea.Model
 	typingTab   *typing
 	settingsTab *settings
 	allStyles   styles
@@ -56,14 +54,12 @@ type styles struct {
 
 func initialModel() model {
 	ta := textarea.New()
-	ta.Placeholder = "Change settings here..."
 	ta.SetWidth(40)
 	ta.SetHeight(8)
 	ta.Blur()
 
 	m := model{
-		currentTab:  tabTyping,
-		textarea:    ta,
+		currentTab:  tabHelp,
 		typingTab:   &typing{gameMode: "countdown", gameCount: 30},
 		allStyles:   styles{borderStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("62")).Padding(1, 2)},
 		settingsTab: &settings{mode: "countdown", count: 30, time: 30},
@@ -178,12 +174,10 @@ func renderTabContent(m model) string {
 	switch m.currentTab {
 	case tabTyping:
 		return m.typingTab.viewTypingTab()
-	case tabStats:
-		return "Stats will be displayed here."
 	case tabSettings:
 		return m.settingsTab.viewSettings()
 	case tabHelp:
-		return "Use ← → to change tabs. Press q to quit. CTRL R to restart test."
+		return "← → to change tabs \n\nCTRL C to quit\n\n CTRL R restart test\n\n TAB toggle new setting\n\n↑ ↓ change current setting"
 	default:
 		return "Unknown tab."
 	}
