@@ -121,6 +121,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = msg.Height
 		m.allStyles.centreStyle = lipgloss.NewStyle().Width(m.width - 6).Height(m.height - 4).Align(lipgloss.Center)
 		return m, nil
+
+	case tickMsg:
+		if m.typingTab.roundFinished() {
+			m.typingTab.time.stopTimer(m.typingTab)
+		}
 	}
 	return m, tick()
 }

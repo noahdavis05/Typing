@@ -139,9 +139,6 @@ func (t *typing) updateTypingTab(key string) {
 				t.position += 1
 				// make timer set to started as user must have pressed a key now
 				t.time.startTimer()
-				if t.roundFinished() {
-					t.time.stopTimer(t)
-				}
 			}
 		}
 	}

@@ -94,7 +94,7 @@ func (t *timerUp) displayTimer() string {
 	if t.started && !t.finished {
 		return fmt.Sprintf("%.2f s", time.Since(t.start).Seconds())
 	} else if t.finished {
-		return fmt.Sprintf("%.2f s, WPM = %.2f", t.finishTime, t.wpm)
+		return fmt.Sprintf("%.2f s\nWPM = %.2f", t.finishTime, t.wpm)
 	}
 	return "0s"
 }
@@ -105,7 +105,7 @@ func (t *timerDown) displayTimer() string {
 	if t.started && !t.finished {
 		return (fmt.Sprintf("%s %.2f s", t.displayBar((float64(t.seconds)-time.Since(t.start).Seconds())/float64(t.seconds)*100), float64(t.seconds)-time.Since(t.start).Seconds()))
 	} else if t.finished {
-		return (fmt.Sprintf("%s %.2f s, WPM = %.2f", t.displayBar(0), 0.0, t.wpm))
+		return (fmt.Sprintf("%s %.2f s\nWPM = %.2f", t.displayBar(0), 0.0, t.wpm))
 	}
 	return (fmt.Sprintf("%s %v.00 s", t.displayBar(100), t.seconds))
 }
