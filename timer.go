@@ -52,20 +52,17 @@ func (t *timerDown) startTimer() {
 }
 
 func calcWPM(ty *typing, time float64) float64 {
-	wordCount := 0
 	errorCount := 0
-	for i := 0; i < len(ty.content); i++ {
+	var i int
+	for i = 0; i < len(ty.content); i++ {
 		if ty.characterColours[i] == defaultKey {
 			break
-		}
-		if ty.content[i] == ' ' {
-			wordCount += 1
 		}
 		if ty.characterColours[i] == incorrectKey {
 			errorCount += 1
 		}
 	}
-	return float64(wordCount) * (float64(60) / time)
+	return (float64(i) - float64(errorCount)) / 5 * (float64(60) / time)
 }
 
 func (t *timerUp) stopTimer(ty *typing) {
@@ -97,7 +94,7 @@ func (t *timerUp) displayTimer() string {
 	if t.started && !t.finished {
 		return fmt.Sprintf("%.2f s", time.Since(t.start).Seconds())
 	} else if t.finished {
-		return fmt.Sprintf("%.2f s, WPM = %v", t.finishTime, t.wpm)
+		return fmt.Sprintf("%.2f s, WPM = %.2f", t.finishTime, t.wpm)
 	}
 	return "0s"
 }
@@ -108,7 +105,7 @@ func (t *timerDown) displayTimer() string {
 	if t.started && !t.finished {
 		return (fmt.Sprintf("%s %.2f s", t.displayBar((float64(t.seconds)-time.Since(t.start).Seconds())/float64(t.seconds)*100), float64(t.seconds)-time.Since(t.start).Seconds()))
 	} else if t.finished {
-		return (fmt.Sprintf("%s %.2f s, WPM = %v", t.displayBar(0), 0.0, t.wpm))
+		return (fmt.Sprintf("%s %.2f s, WPM = %.2f", t.displayBar(0), 0.0, t.wpm))
 	}
 	return (fmt.Sprintf("%s %v.00 s", t.displayBar(100), t.seconds))
 }
