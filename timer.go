@@ -17,6 +17,7 @@ type timerUp struct {
 	started    bool
 	finished   bool
 	finishTime float64
+	wpm float64
 }
 
 type timerDown struct {
@@ -24,12 +25,13 @@ type timerDown struct {
 	start    time.Time
 	started  bool
 	finished bool
+	wpm float64
 }
 
 type timer interface {
-	displayTimer() string
+	displayTimer(ty *typing) string
 	startTimer()
-	stopTimer()
+	stopTimer(ty *typing)
 	isFinished() bool
 }
 
@@ -44,6 +46,7 @@ func (t *timerUp) startTimer() {
 	if !t.started {
 		t.started = true
 		t.start = time.Now()
+		t.wpm = -1
 	}
 }
 
@@ -51,16 +54,43 @@ func (t *timerDown) startTimer() {
 	if !t.started {
 		t.started = true
 		t.start = time.Now()
+		t.wpm = -1
 	}
 }
 
-func (t *timerUp) stopTimer() {
-	t.finished = true
-	t.finishTime = time.Since(t.start).Seconds()
+func calcWPM(ty *typing, time float64) float64{
+	wordCount := 0
+	errorCount := 0
+	for i := 0; i < len(ty.content); i++{
+		if ty.characterColours[i] == "default"{
+			break
+		}
+		if ty.content[i] == ' '{
+			wordCount += 1
+		}
+		if ty.characterColours[i] == "incorrect"{
+			errorCount += 1
+		}
+	}
+	return float64(wordCount) * (float64(60) / time) 
 }
 
-func (t *timerDown) stopTimer() {
-	t.finished = true
+
+func (t *timerUp) stopTimer(ty *typing) {
+	if !t.finished {
+		t.finished = true
+		t.finishTime = time.Since(t.start).Seconds()
+		// calculate words per minute
+		// iterate over content for every space we add 1 to word count, also make an error count as we go through
+		t.wpm = calcWPM(ty, t.finishTime)
+	}
+}
+
+func (t *timerDown) stopTimer(ty *typing) {
+	if !t.finished{
+	 	t.finished = true
+		t.wpm = calcWPM(ty, float64(t.seconds))
+	}
 }
 
 func (t *timerUp) isFinished() bool {
@@ -71,25 +101,25 @@ func (t *timerDown) isFinished() bool {
 	return t.finished
 }
 
-func (t *timerUp) displayTimer() string {
+func (t *timerUp) displayTimer(ty *typing) string {
 	if t.started && !t.finished {
 		return fmt.Sprintf("%.2f s", time.Since(t.start).Seconds())
 	} else if t.finished {
-		return fmt.Sprintf("%.2f s", t.finishTime)
+		return fmt.Sprintf("%.2f s, WPM = %v", t.finishTime, t.wpm)
 	}
 	return "0s"
 }
 
-func (t *timerDown) displayTimer() string {
+func (t *timerDown) displayTimer(ty *typing) string {
 	// add the border
 	// create the bar
 	if t.started && !t.finished {
 		if (float64(t.seconds) - time.Since(t.start).Seconds()) < 0 {
-			t.finished = true
+			t.stopTimer(ty)
 		}
 		return (fmt.Sprintf("%s %.2f s", t.displayBar((float64(t.seconds)-time.Since(t.start).Seconds())/float64(t.seconds)*100), float64(t.seconds)-time.Since(t.start).Seconds()))
 	} else if t.finished {
-		return (fmt.Sprintf("%s %.2f s", t.displayBar(0), 0.0))
+		return (fmt.Sprintf("%s %.2f s, WPM = %v", t.displayBar(0), 0.0, t.wpm))
 	}
 	return (fmt.Sprintf("%s %v.00 s", t.displayBar(100), t.seconds))
 }

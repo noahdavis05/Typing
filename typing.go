@@ -134,7 +134,7 @@ func (t *typing) updateTypingTab(key string) {
 				// make timer set to started as user must have pressed a key now
 				t.time.startTimer()
 				if t.position == len(t.content)-1 {
-					t.time.stopTimer()
+					t.time.stopTimer(t)
 				}
 			}
 		}
@@ -173,6 +173,6 @@ func (t typing) viewTypingTab() string {
 
 	}
 
-	output = output + "\n\n\n" + t.time.displayTimer()
+	output = output + "\n\n\n" + t.time.displayTimer(&t)
 	return output
 }
