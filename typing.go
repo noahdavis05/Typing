@@ -133,7 +133,7 @@ func (t *typing) updateTypingTab(key string) {
 				t.position += 1
 				// make timer set to started as user must have pressed a key now
 				t.time.startTimer()
-				if t.position == len(t.content)-1 {
+				if t.roundFinished() {
 					t.time.stopTimer(t)
 				}
 			}
@@ -173,6 +173,21 @@ func (t typing) viewTypingTab() string {
 
 	}
 
-	output = output + "\n\n\n" + t.time.displayTimer(&t)
+	output = output + "\n\n\n" + t.time.displayTimer()
 	return output
+}
+
+func (t *typing) roundFinished() bool {
+	// check what type of timer
+	switch v := t.time.(type) {
+	case *timerDown:
+		if (float64(v.seconds) - time.Since(v.start).Seconds()) <= 0 {
+			return true
+		}
+	case *timerUp:
+		if t.position == len(t.content)-1 {
+			return true
+		}
+	}
+	return false
 }

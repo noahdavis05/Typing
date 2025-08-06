@@ -3,8 +3,6 @@ package main
 import (
 	"strconv"
 	"strings"
-
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 type settings struct {
@@ -38,16 +36,16 @@ func (s *settings) viewSettings() string {
 	for pos, set := range s.sets {
 		tempContent := set.title
 		for i := 0; i < height; i++ {
-			if i < len(set.options){
+			if i < len(set.options) {
 				if set.position == i {
 					tempContent += "\n" + set.options[i] + " (X)"
 				} else {
-					tempContent += "\n" + set.options[i]  + " ( )"
+					tempContent += "\n" + set.options[i] + " ( )"
 				}
 			} else {
 				tempContent += "\n"
 			}
-			
+
 		}
 		if s.active == pos {
 			tempContent = borderStyleActive.Render(tempContent)
@@ -67,19 +65,12 @@ func (s *settings) viewSettings() string {
 	finalString := ""
 	for i := 0; i < len(twoDimensionContent[0]); i++ {
 		for _, block := range twoDimensionContent {
-			finalString += block[i] 
+			finalString += block[i]
 			finalString += " "
 		}
 		finalString += "\n"
 	}
 	return finalString
-}
-
-func runSettingsUpdate(s *settings, char string) tea.Cmd {
-	return func() tea.Msg {
-		s.updateSettings(char)
-		return nil
-	}
 }
 
 func (s *settings) updateSettings(key string) {
