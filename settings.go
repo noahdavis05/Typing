@@ -20,7 +20,7 @@ type setting struct {
 }
 
 func (s *settings) initSettings() {
-	s.mode = "countdown"
+	s.mode = gameModeCountdown
 	s.count = 30
 	s.active = 0
 	s.sets = []*setting{
@@ -73,23 +73,6 @@ func (s *settings) viewSettings() string {
 	return finalString
 }
 
-func (s *settings) updateSettings(key string) {
-	switch key {
-	case "tab":
-		s.active += 1
-		if s.active == len(s.sets) {
-			s.active = 0
-		}
-	case "down":
-		// get the setting tab
-		setting := s.sets[s.active]
-		setting.position += 1
-		if setting.position == len(setting.options) {
-			setting.position = 0
-		}
-	}
-}
-
 func (m *model) updateSettings(key string) *typing {
 	s := m.settingsTab
 	switch key {
@@ -110,7 +93,7 @@ func (m *model) updateSettings(key string) *typing {
 
 		m.updateSettingsValues()
 		var gc int
-		if m.typingTab.gameMode == "countdown" {
+		if m.typingTab.gameMode == gameModeCountdown {
 			gc = m.settingsTab.time
 		} else {
 			gc = m.settingsTab.count
@@ -128,10 +111,10 @@ func (m *model) updateSettingsValues() {
 	set := m.settingsTab.sets[m.settingsTab.active]
 	switch set.title {
 	case "Game Mode":
-		if m.typingTab.gameMode == "countdown" {
-			m.settingsTab.mode = "words"
+		if m.typingTab.gameMode == gameModeCountdown {
+			m.settingsTab.mode = gameModeWords
 		} else {
-			m.settingsTab.mode = "countdown"
+			m.settingsTab.mode = gameModeCountdown
 		}
 	case "Time Limit":
 		m.settingsTab.time, _ = strconv.Atoi(set.options[set.position])

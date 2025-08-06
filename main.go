@@ -80,12 +80,6 @@ func (m model) Init() tea.Cmd {
 	return tea.EnterAltScreen
 }
 
-func (m *model) updateFromSettings() tea.Cmd {
-	m.typingTab.gameMode = m.settingsTab.mode
-	m.typingTab.gameCount = m.settingsTab.count
-	return nil
-}
-
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -106,28 +100,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, cmd
 		case "ctrl+r":
-			// make a new typing Tab
-			// check gamemode
-			var newTypingTab *typing
-			if m.settingsTab.mode == "countdown" {
-				newTypingTab = &typing{gameMode: m.settingsTab.mode, gameCount: m.settingsTab.time}
-			} else {
-				newTypingTab = &typing{gameMode: m.settingsTab.mode, gameCount: m.settingsTab.count}
-			}
-			m.typingTab = newTypingTab
-			m.typingTab.initTyping()
+			m = m.startRound()
 			return m, nil
 		case "enter":
-			// make a new typing Tab
-			// check gamemode
-			var newTypingTab *typing
-			if m.settingsTab.mode == "countdown" {
-				newTypingTab = &typing{gameMode: m.settingsTab.mode, gameCount: m.settingsTab.time}
-			} else {
-				newTypingTab = &typing{gameMode: m.settingsTab.mode, gameCount: m.settingsTab.count}
-			}
-			m.typingTab = newTypingTab
-			m.typingTab.initTyping()
+			m = m.startRound()
 			m.currentTab = tabTyping
 			return m, nil
 		default:
@@ -147,7 +123,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	return m, tick()
+}
 
+func (m model) startRound() model {
+	var newTypingTab *typing
+	if m.settingsTab.mode == "countdown" {
+		newTypingTab = &typing{gameMode: m.settingsTab.mode, gameCount: m.settingsTab.time}
+	} else {
+		newTypingTab = &typing{gameMode: m.settingsTab.mode, gameCount: m.settingsTab.count}
+	}
+	m.typingTab = newTypingTab
+	m.typingTab.initTyping()
+	return m
 }
 
 func (m model) View() string {

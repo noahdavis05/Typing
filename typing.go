@@ -8,6 +8,14 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const (
+	defaultKey        = "default"
+	correctKey        = "correct"
+	incorrectKey      = "incorrect"
+	gameModeCountdown = "countdown"
+	gameModeWords     = "words"
+)
+
 var (
 	red         = lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 	green       = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
@@ -59,7 +67,7 @@ func runTypingUpdate(t *typing, char string) tea.Cmd {
 func (t *typing) initTyping() {
 	// options are words (how long to do n words) or countdown (how many words in n time)
 	switch t.gameMode {
-	case "words":
+	case gameModeWords:
 		rand.Seed(time.Now().UnixNano())
 		words := ""
 		for i := 1; i < t.gameCount+1; i++ {
@@ -74,7 +82,7 @@ func (t *typing) initTyping() {
 		t.content = words
 
 		t.time = &timerUp{started: false, finished: false}
-	case "countdown":
+	case gameModeCountdown:
 		rand.Seed(time.Now().UnixNano())
 		words := ""
 		for i := 0; i < 300; i++ {
@@ -87,7 +95,7 @@ func (t *typing) initTyping() {
 	}
 
 	for i := 0; i < len(t.content); i++ {
-		t.characterColours = append(t.characterColours, "default")
+		t.characterColours = append(t.characterColours, defaultKey)
 	}
 }
 
@@ -95,19 +103,17 @@ func (t *typing) updateTypingTab(key string) {
 	switch key {
 	case "backspace":
 		if t.position > 0 {
-			//t.content = t.content[:len(t.content)-1]
 			if t.extraKeys == 1 {
-				// added characters after the word // delete these
+				// In this case the user finally removed all extra chars
 				t.extraKeys = 0
-				// change the previous position back to green
-				t.characterColours[t.position] = "correct"
-
+				t.characterColours[t.position] = correctKey
+				t.characterColours[t.position-1] = correctKey
 			} else if t.extraKeys > 1 {
 				t.extraKeys -= 1
 				// mkae sure the previosu character is red
-				t.characterColours[t.position] = "incorrect"
+				t.characterColours[t.position] = incorrectKey
 			} else {
-				t.characterColours[t.position-1] = "default"
+				t.characterColours[t.position-1] = defaultKey
 				t.position -= 1
 			}
 		}
@@ -116,19 +122,19 @@ func (t *typing) updateTypingTab(key string) {
 			switch t.content[t.position] {
 			case ' ':
 				if key == " " {
-					t.characterColours[t.position] = "correct"
+					t.characterColours[t.position] = correctKey
 					t.position += 1
 					t.extraKeys = 0
 				} else {
 					// incorrect characters after word
 					t.extraKeys += 1
-					t.characterColours[t.position-1] = "incorrect"
+					t.characterColours[t.position-1] = incorrectKey
 				}
 			default:
 				if key == string(t.content[t.position]) {
-					t.characterColours[t.position] = "correct"
+					t.characterColours[t.position] = correctKey
 				} else {
-					t.characterColours[t.position] = "incorrect"
+					t.characterColours[t.position] = incorrectKey
 				}
 				t.position += 1
 				// make timer set to started as user must have pressed a key now
@@ -148,21 +154,21 @@ func (t typing) viewTypingTab() string {
 	for pos, val := range t.characterColours {
 		if lineCount < 3 {
 			switch val {
-			case "default":
+			case defaultKey:
 				output += string(t.content[pos])
-			case "correct":
+			case correctKey:
 				output += green.Render(string(t.content[pos]))
-			case "incorrect":
+			case incorrectKey:
 				output += red.Render(string(t.content[pos]))
 			}
-			if t.content[pos] == ' ' && t.gameMode == "countdown" {
+			if t.content[pos] == ' ' && t.gameMode == gameModeCountdown {
 				count += 1
 				// check if the colour is default or not - if not default we don't want this line and remove it
 				if count%15 == 0 {
 					output = output[:len(output)-1]
 					output += "\n"
 					lineCount += 1
-					if t.characterColours[pos] != "default" {
+					if t.characterColours[pos] != defaultKey {
 						output = ""
 						lineCount = 0
 					}
@@ -178,10 +184,10 @@ func (t typing) viewTypingTab() string {
 }
 
 func (t *typing) roundFinished() bool {
-	// check what type of timer
+	// check what type of timer and return true if the round has been finished
 	switch v := t.time.(type) {
 	case *timerDown:
-		if (float64(v.seconds) - time.Since(v.start).Seconds()) <= 0 {
+		if v.started && (float64(v.seconds)-time.Since(v.start).Seconds()) <= 0 {
 			return true
 		}
 	case *timerUp:

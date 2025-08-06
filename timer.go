@@ -55,13 +55,13 @@ func calcWPM(ty *typing, time float64) float64 {
 	wordCount := 0
 	errorCount := 0
 	for i := 0; i < len(ty.content); i++ {
-		if ty.characterColours[i] == "default" {
+		if ty.characterColours[i] == defaultKey {
 			break
 		}
 		if ty.content[i] == ' ' {
 			wordCount += 1
 		}
-		if ty.characterColours[i] == "incorrect" {
+		if ty.characterColours[i] == incorrectKey {
 			errorCount += 1
 		}
 	}
