@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -26,30 +27,52 @@ func (s *settings) initSettings() {
 	s.active = 0
 	s.sets = []*setting{
 		{title: "Game Mode", position: 0, options: []string{"Time Limit", "Word Limit"}},
-		{title: "Time Limit", position: 0, options: []string{"15", "30", "60", "90", "120"}},
-		{title: "Word Limit", position: 0, options: []string{"15", "30", "50", "60", "100"}},
+		{title: "Time Limit", position: 1, options: []string{"15", "30", "60", "90", "120"}},
+		{title: "Word Limit", position: 1, options: []string{"15", "30", "50", "60", "100"}},
 	}
 }
 
 func (s *settings) viewSettings() string {
-	fullContent := ""
+	height := 6
+	fullContent := []string{}
 	for pos, set := range s.sets {
 		tempContent := set.title
-		for i, content := range set.options {
-			if set.position == i {
-				tempContent += "\n" + content + " (X)"
+		for i := 0; i < height; i++ {
+			if i < len(set.options){
+				if set.position == i {
+					tempContent += "\n" + set.options[i] + " (X)"
+				} else {
+					tempContent += "\n" + set.options[i]  + " ( )"
+				}
 			} else {
-				tempContent += "\n" + content + " ( )"
+				tempContent += "\n"
 			}
+			
 		}
 		if s.active == pos {
-			fullContent += borderStyleActive.Render(tempContent) + "\n"
+			tempContent = borderStyleActive.Render(tempContent)
 		} else {
-			fullContent += borderStyleDefault.Render(tempContent) + "\n"
+			tempContent = borderStyleDefault.Render(tempContent)
 		}
-
+		fullContent = append(fullContent, tempContent)
 	}
-	return fullContent
+	// make a 2d slice for each block and each row in each block
+	twoDimensionContent := [][]string{}
+	for _, item := range fullContent {
+		tempContent := strings.Split(item, "\n")
+		twoDimensionContent = append(twoDimensionContent, tempContent)
+	}
+
+	// iterate over each line of each settings tab and add them to a string line by line
+	finalString := ""
+	for i := 0; i < len(twoDimensionContent[0]); i++ {
+		for _, block := range twoDimensionContent {
+			finalString += block[i] 
+			finalString += " "
+		}
+		finalString += "\n"
+	}
+	return finalString
 }
 
 func runSettingsUpdate(s *settings, char string) tea.Cmd {

@@ -22,7 +22,7 @@ const (
 	tabStats
 	tabSettings
 	tabHelp
-	minHeight = 35
+	minHeight = 17
 )
 
 var (
