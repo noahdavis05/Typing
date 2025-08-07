@@ -24,6 +24,7 @@ const (
 	minHeight = 17
 )
 
+// generic styles
 var (
 	borderStyleActive lipgloss.Style = lipgloss.NewStyle().
 				Border(lipgloss.RoundedBorder()).
@@ -38,6 +39,7 @@ var (
 
 var tabNames = []string{"Typing", "Settings", "Help"}
 
+// bubbletea model struct - contains the sub structs for given tabs
 type model struct {
 	currentTab  tab
 	width       int
@@ -47,11 +49,13 @@ type model struct {
 	allStyles   styles
 }
 
+// sub-struct containing specific styles for the model
 type styles struct {
 	centreStyle lipgloss.Style
 	borderStyle lipgloss.Style
 }
 
+// initialise the initial model and its sub structs
 func initialModel() model {
 	ta := textarea.New()
 	ta.SetWidth(40)
@@ -71,11 +75,15 @@ func initialModel() model {
 	return m
 }
 
+// Init the app and set it to full screen
 func (m model) Init() tea.Cmd {
 	tick()
 	return tea.EnterAltScreen
 }
 
+// main update function - updates model and calls functions on key presses
+// within case tea.Msg all general keys (ones used everywhere) defined here
+// all specific keys to certain tabs are checked in their own update functions
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -126,6 +134,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tick()
 }
 
+// initialises new typing tab struct within model and returns it
 func (m model) startRound() model {
 	var newTypingTab *typing
 	if m.settingsTab.mode == "countdown" {
@@ -138,6 +147,7 @@ func (m model) startRound() model {
 	return m
 }
 
+// display the content
 func (m model) View() string {
 	if m.height > 0 && m.height < minHeight {
 		return "Window too small please resize"
@@ -158,6 +168,7 @@ func (m model) View() string {
 	return content
 }
 
+// function which returns the string to display the tabs at top of screen
 func renderTabs(current tab) string {
 	var out string
 	for i, name := range tabNames {
@@ -170,6 +181,7 @@ func renderTabs(current tab) string {
 	return out
 }
 
+// function which renders content from inside a tab
 func renderTabContent(m model) string {
 	switch m.currentTab {
 	case tabTyping:
