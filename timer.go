@@ -12,6 +12,8 @@ const (
 
 type tickMsg time.Time
 
+// struct for a timer which goes up - used in 'words' gamemode where player is timed
+// how long it takes to complete a set of words
 type timerUp struct {
 	start      time.Time
 	started    bool
@@ -20,6 +22,8 @@ type timerUp struct {
 	wpm        float64
 }
 
+// struct for a countdown timer - used in 'countdown' gamemode
+// this also includes a countdown bar as well
 type timerDown struct {
 	seconds  int
 	start    time.Time
@@ -28,6 +32,7 @@ type timerDown struct {
 	wpm      float64
 }
 
+// interface for both types of timer
 type timer interface {
 	displayTimer() string
 	startTimer()
@@ -51,6 +56,8 @@ func (t *timerDown) startTimer() {
 	}
 }
 
+// calculates words per minute with formula
+// wpm = (characters typed - incorrect characters) / 5 * 60/time taken
 func calcWPM(ty *typing, time float64) float64 {
 	errorCount := 0
 	var i int
