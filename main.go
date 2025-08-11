@@ -191,10 +191,20 @@ func renderTabContent(m model) string {
 	case tabSettings:
 		return m.settingsTab.viewSettings(m.designStyles)
 	case tabHelp:
-		return m.designStyles.normalText.Render("← → to change tabs \n\nCTRL C to quit\n\n CTRL R restart test\n\n TAB toggle new setting\n\n↑ ↓ change current setting")
+		return m.displayHelp()
 	default:
 		return "Unknown tab."
 	}
+}
+
+func (m model) displayHelp() string {
+	res := ""
+	res += m.designStyles.normalText.Render("← → to change tabs") + "\n\n"
+	res += m.designStyles.normalText.Render("CTRL C to quit") + "\n\n"
+	res += m.designStyles.normalText.Render("CTRL R restart test") + "\n\n"
+	res += m.designStyles.normalText.Render("TAB toggle new setting") + "\n\n"
+	res += m.designStyles.normalText.Render("↑ ↓ change current setting")
+	return res
 }
 
 func tick() tea.Cmd {

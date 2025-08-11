@@ -35,11 +35,11 @@ func (ct *colourTheme) loadDefaultColourTheme() {
 
 	ct.borderStyleDefault = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#94A1B2")).
+		BorderForeground(lipgloss.Color("#c0c8d2ff")).
 		Padding(1, 2)
 
 	ct.tabTextDefault = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#72757E")).
+		Foreground(lipgloss.Color("#c0c8d2ff")).
 		Padding(0, 2)
 
 	ct.tabTextActive = lipgloss.NewStyle().
@@ -58,10 +58,10 @@ func (ct *colourTheme) loadDefaultColourTheme() {
 		Bold(true)
 
 	ct.typeTextDefault = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#94A1B2"))
+		Foreground(lipgloss.Color("#c0c8d2ff"))
 
 	ct.normalText = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#94A1B2"))
+		Foreground(lipgloss.Color("#c0c8d2ff"))
 
 	ct.countDownBar = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#7F5AF0"))
