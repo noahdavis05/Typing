@@ -82,7 +82,7 @@ func (m model) Init() tea.Cmd {
 // all specific keys to certain tabs are checked in their own update functions
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-	if m.typingTab.time.isActive() {
+	if m.typingTab.time.isActive(){
 		cmd = tick()
 	}
 
@@ -104,18 +104,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		case "ctrl+r":
 			m = m.startRound()
-			return m, cmd
+			return m, nil
 		case "enter":
 			m = m.startRound()
 			m.currentTab = tabTyping
-			return m, cmd
+			return m, nil
 		default:
 			switch m.currentTab {
 			case tabTyping:
-				return m, tea.Batch(runTypingUpdate(m.typingTab, msg.String()), tick())
+				if !m.typingTab.time.isActive(){
+					return m, tea.Batch(runTypingUpdate(m.typingTab, msg.String()), tick())
+				}
+				return m, tea.Batch(runTypingUpdate(m.typingTab, msg.String()))
 			case tabSettings:
 				m.typingTab = m.updateSettings(msg.String())
-				return m, cmd
+				return m, nil
 			}
 
 		}
@@ -123,16 +126,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 		m.centreStyle = lipgloss.NewStyle().Width(m.width - 6).Height(m.height - 4).Align(lipgloss.Center)
-		return m, cmd
+		return m, nil
 
 	case tickMsg:
 		if m.typingTab.roundFinished() {
 			m.typingTab.time.stopTimer(m.typingTab)
+			return m, nil
 		}
-		return m, cmd
+		if m.typingTab.time.isActive(){
+			return m, tick()
+		}
 	}
-
-	return m, cmd
+	return m, nil
 }
 
 // initialises new typing tab struct within model and returns it
