@@ -34,7 +34,7 @@ type timerDown struct {
 
 // interface for both types of timer
 type timer interface {
-	displayTimer() string
+	displayTimer(designStyles colourTheme) string
 	startTimer()
 	stopTimer(ty *typing)
 	isFinished() bool
@@ -113,33 +113,33 @@ func (t *timerDown) isFinished() bool {
 	return t.finished
 }
 
-func (t *timerUp) displayTimer() string {
+func (t *timerUp) displayTimer(designStyles colourTheme) string {
 	if t.started && !t.finished {
-		return fmt.Sprintf("%.2f s", time.Since(t.start).Seconds())
+		return designStyles.normalText.Render(fmt.Sprintf("%.2f s", time.Since(t.start).Seconds()))
 	} else if t.finished {
-		return fmt.Sprintf("%.2f s\nWPM = %.2f", t.finishTime, t.wpm)
+		return designStyles.normalText.Render(fmt.Sprintf("%.2f s\nWPM = %.2f", t.finishTime, t.wpm))
 	}
 	return "0s"
 }
 
-func (t *timerDown) displayTimer() string {
+func (t *timerDown) displayTimer(designStyles colourTheme) string {
 	// add the border
 	// create the bar
 	if t.started && !t.finished {
-		return (fmt.Sprintf("%s %.2f s", t.displayBar((float64(t.seconds)-time.Since(t.start).Seconds())/float64(t.seconds)*100), float64(t.seconds)-time.Since(t.start).Seconds()))
+		return t.displayBar((float64(t.seconds)-time.Since(t.start).Seconds())/float64(t.seconds)*100, designStyles) + designStyles.normalText.Render(fmt.Sprintf(" %.2f s", float64(t.seconds)-time.Since(t.start).Seconds()))
 	} else if t.finished {
-		return (fmt.Sprintf("%s %.2f s\nWPM = %.2f", t.displayBar(0), 0.0, t.wpm))
+		return t.displayBar(0, designStyles) + designStyles.normalText.Render(fmt.Sprintf(" %.2f s\nWPM = %.2f", 0.0, t.wpm))
 	}
-	return (fmt.Sprintf("%s %v.00 s", t.displayBar(100), t.seconds))
+	return t.displayBar(100, designStyles) + designStyles.normalText.Render(fmt.Sprintf(" %v.00 s", t.seconds))
 }
 
-func (t *timerDown) displayBar(percent float64) string {
+func (t *timerDown) displayBar(percent float64, designStyles colourTheme) string {
 	res := ""
 	for i := 0; i < int(percent); i++ {
-		res += blue.Render(string(block))
+		res += string(block)
 	}
 	for i := 0; i < 100-int(percent); i++ {
 		res += string(emptyBlock)
 	}
-	return res
+	return designStyles.countDownBar.Render(res)
 }

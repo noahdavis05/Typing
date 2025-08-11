@@ -30,7 +30,7 @@ func (s *settings) initSettings() {
 	}
 }
 
-func (s *settings) viewSettings() string {
+func (s *settings) viewSettings(designStyles colourTheme) string {
 	height := 6
 	fullContent := []string{}
 	for pos, set := range s.sets {
@@ -38,9 +38,9 @@ func (s *settings) viewSettings() string {
 		for i := 0; i < height; i++ {
 			if i < len(set.options) {
 				if set.position == i {
-					tempContent += "\n" + set.options[i] + " (X)"
+					tempContent += designStyles.normalText.Render("\n" + set.options[i] + " (X)")
 				} else {
-					tempContent += "\n" + set.options[i] + " ( )"
+					tempContent += designStyles.normalText.Render("\n" + set.options[i] + " ( )")
 				}
 			} else {
 				tempContent += "\n"
@@ -48,9 +48,9 @@ func (s *settings) viewSettings() string {
 
 		}
 		if s.active == pos {
-			tempContent = borderStyleActive.Render(tempContent)
+			tempContent = designStyles.borderStyleActive.Render(tempContent)
 		} else {
-			tempContent = borderStyleDefault.Render(tempContent)
+			tempContent = designStyles.borderStyleDefault.Render(tempContent)
 		}
 		fullContent = append(fullContent, tempContent)
 	}

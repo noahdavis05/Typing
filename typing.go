@@ -144,7 +144,7 @@ func (t *typing) updateTypingTab(key string) {
 	}
 }
 
-func (t typing) viewTypingTab() string {
+func (t typing) viewTypingTab(designStyles colourTheme) string {
 	output := ""
 	count := 0
 	lineCount := 0
@@ -152,11 +152,11 @@ func (t typing) viewTypingTab() string {
 		if lineCount < 3 {
 			switch val {
 			case defaultKey:
-				output += string(t.content[pos])
+				output += designStyles.typeTextDefault.Render(string(t.content[pos]))
 			case correctKey:
-				output += green.Render(string(t.content[pos]))
+				output += designStyles.typeTextCorrect.Render(string(t.content[pos]))
 			case incorrectKey:
-				output += red.Render(string(t.content[pos]))
+				output += designStyles.typeTextIncorrect.Render(string(t.content[pos]))
 			}
 			if t.content[pos] == ' ' && t.gameMode == gameModeCountdown {
 				count += 1
@@ -176,7 +176,7 @@ func (t typing) viewTypingTab() string {
 
 	}
 
-	output = output + "\n\n\n" + t.time.displayTimer()
+	output = output + "\n\n\n" + t.time.displayTimer(designStyles)
 	return output
 }
 

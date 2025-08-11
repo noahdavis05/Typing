@@ -46,14 +46,11 @@ type model struct {
 	height      int
 	typingTab   *typing
 	settingsTab *settings
-	allStyles   styles
+	centreStyle lipgloss.Style
+	designStyles colourTheme
 }
 
-// sub-struct containing specific styles for the model
-type styles struct {
-	centreStyle lipgloss.Style
-	borderStyle lipgloss.Style
-}
+
 
 // initialise the initial model and its sub structs
 func initialModel() model {
@@ -65,12 +62,12 @@ func initialModel() model {
 	m := model{
 		currentTab:  tabHelp,
 		typingTab:   &typing{gameMode: "countdown", gameCount: 30},
-		allStyles:   styles{borderStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("62")).Padding(1, 2)},
 		settingsTab: &settings{mode: "countdown", count: 30, time: 30},
 	}
 
 	m.typingTab.initTyping()
 	m.settingsTab.initSettings()
+	m.designStyles, _ = NewColourTheme(0)
 
 	return m
 }
@@ -125,7 +122,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		m.allStyles.centreStyle = lipgloss.NewStyle().Width(m.width - 6).Height(m.height - 4).Align(lipgloss.Center)
+		m.centreStyle = lipgloss.NewStyle().Width(m.width - 6).Height(m.height - 4).Align(lipgloss.Center)
 		return m, cmd
 
 	case tickMsg:
@@ -156,7 +153,7 @@ func (m model) View() string {
 	if m.height > 0 && m.height < minHeight {
 		return "Window too small please resize"
 	}
-	header := renderTabs(m.currentTab)
+	header := m.renderTabs()
 	body := renderTabContent(m)
 	rows := len(strings.Split(body, "\n"))
 	if m.height > 0 {
@@ -166,21 +163,22 @@ func (m model) View() string {
 	content := fmt.Sprintf("%s\n\n%s", header, body)
 
 	if m.height > 0 && m.width > 0 {
-		return m.allStyles.borderStyle.Render((m.allStyles.centreStyle.Render(content)))
+		return m.designStyles.borderStyleDefault.Render((m.centreStyle.Render(content)))
 	}
 
 	return content
 }
 
 // function which returns the string to display the tabs at top of screen
-func renderTabs(current tab) string {
+func (m model) renderTabs() string {
 	var out string
 	for i, name := range tabNames {
-		style := lipgloss.NewStyle().Padding(0, 1)
-		if current == tab(i) {
-			style = style.Bold(true).Underline(true)
+		if m.currentTab == tab(i) {
+			out += m.designStyles.tabTextActive.Render(name )
+		} else {
+			out += m.designStyles.tabTextDefault.Render(name )
 		}
-		out += style.Render(name) + " "
+		
 	}
 	return out
 }
@@ -189,11 +187,11 @@ func renderTabs(current tab) string {
 func renderTabContent(m model) string {
 	switch m.currentTab {
 	case tabTyping:
-		return m.typingTab.viewTypingTab()
+		return m.typingTab.viewTypingTab(m.designStyles)
 	case tabSettings:
-		return m.settingsTab.viewSettings()
+		return m.settingsTab.viewSettings(m.designStyles)
 	case tabHelp:
-		return "← → to change tabs \n\nCTRL C to quit\n\n CTRL R restart test\n\n TAB toggle new setting\n\n↑ ↓ change current setting"
+		return m.designStyles.normalText.Render("← → to change tabs \n\nCTRL C to quit\n\n CTRL R restart test\n\n TAB toggle new setting\n\n↑ ↓ change current setting")
 	default:
 		return "Unknown tab."
 	}
