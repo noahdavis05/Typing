@@ -77,7 +77,6 @@ func initialModel() model {
 
 // Init the app and set it to full screen
 func (m model) Init() tea.Cmd {
-	tick()
 	return tea.EnterAltScreen
 }
 
@@ -131,7 +130,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.typingTab.time.stopTimer(m.typingTab)
 		}
 	}
-	return m, tick()
+	if m.typingTab.time.isActive(){
+		return m, tick()
+	}
+	return m, nil
 }
 
 // initialises new typing tab struct within model and returns it
@@ -196,7 +198,7 @@ func renderTabContent(m model) string {
 }
 
 func tick() tea.Cmd {
-	return tea.Tick(time.Millisecond, func(t time.Time) tea.Msg {
+	return tea.Tick(time.Millisecond * 10, func(t time.Time) tea.Msg {
 		return tickMsg(t)
 	})
 }

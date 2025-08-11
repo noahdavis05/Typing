@@ -38,7 +38,23 @@ type timer interface {
 	startTimer()
 	stopTimer(ty *typing)
 	isFinished() bool
+	isActive() bool
 }
+
+func (t *timerUp) isActive() bool {
+	if t.started && !t.finished{
+		return true
+	}
+	return false
+}
+
+func (t *timerDown) isActive() bool {
+	if t.started && !t.finished{
+		return true
+	}
+	return false
+}
+
 
 func (t *timerUp) startTimer() {
 	if !t.started {
