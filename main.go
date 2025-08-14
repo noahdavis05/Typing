@@ -41,16 +41,14 @@ var tabNames = []string{"Typing", "Settings", "Help"}
 
 // bubbletea model struct - contains the sub structs for given tabs
 type model struct {
-	currentTab  tab
-	width       int
-	height      int
-	typingTab   *typing
-	settingsTab *settings
-	centreStyle lipgloss.Style
+	currentTab   tab
+	width        int
+	height       int
+	typingTab    *typing
+	settingsTab  *settings
+	centreStyle  lipgloss.Style
 	designStyles colourTheme
 }
-
-
 
 // initialise the initial model and its sub structs
 func initialModel() model {
@@ -69,6 +67,9 @@ func initialModel() model {
 	m.settingsTab.initSettings()
 	m.designStyles, _ = NewColourTheme(0)
 
+	// load config
+	m.loadConfig()
+
 	return m
 }
 
@@ -82,7 +83,7 @@ func (m model) Init() tea.Cmd {
 // all specific keys to certain tabs are checked in their own update functions
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-	if m.typingTab.time.isActive(){
+	if m.typingTab.time.isActive() {
 		cmd = tick()
 	}
 
@@ -112,7 +113,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			switch m.currentTab {
 			case tabTyping:
-				if !m.typingTab.time.isActive(){
+				if !m.typingTab.time.isActive() {
 					return m, tea.Batch(runTypingUpdate(m.typingTab, msg.String()), tick())
 				}
 				return m, tea.Batch(runTypingUpdate(m.typingTab, msg.String()))
@@ -133,7 +134,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.typingTab.time.stopTimer(m.typingTab)
 			return m, nil
 		}
-		if m.typingTab.time.isActive(){
+		if m.typingTab.time.isActive() {
 			return m, tick()
 		}
 	}
@@ -179,11 +180,11 @@ func (m model) renderTabs() string {
 	var out string
 	for i, name := range tabNames {
 		if m.currentTab == tab(i) {
-			out += m.designStyles.tabTextActive.Render(name )
+			out += m.designStyles.tabTextActive.Render(name)
 		} else {
-			out += m.designStyles.tabTextDefault.Render(name )
+			out += m.designStyles.tabTextDefault.Render(name)
 		}
-		
+
 	}
 	return out
 }
