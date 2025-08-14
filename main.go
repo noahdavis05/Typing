@@ -24,19 +24,6 @@ const (
 	minHeight = 17
 )
 
-// generic styles
-var (
-	borderStyleActive lipgloss.Style = lipgloss.NewStyle().
-				Border(lipgloss.RoundedBorder()).
-				BorderForeground(lipgloss.Color("62")).
-				Padding(1, 2)
-
-	borderStyleDefault lipgloss.Style = lipgloss.NewStyle().
-				Border(lipgloss.RoundedBorder()).
-				BorderForeground(lipgloss.Color("#616060")).
-				Padding(1, 2)
-)
-
 var tabNames = []string{"Typing", "Settings", "Help"}
 
 // bubbletea model struct - contains the sub structs for given tabs
@@ -47,7 +34,8 @@ type model struct {
 	typingTab    *typing
 	settingsTab  *settings
 	centreStyle  lipgloss.Style
-	designStyles colourTheme
+	currentStyle colourTheme
+	designStyles []colourTheme
 }
 
 // initialise the initial model and its sub structs
@@ -65,10 +53,21 @@ func initialModel() model {
 
 	m.typingTab.initTyping()
 	m.settingsTab.initSettings()
-	m.designStyles, _ = NewColourTheme(0)
 
 	// load config
-	m.loadConfig()
+	temp, err := m.loadConfig()
+	if err != nil {
+		// handle the error and load default styles
+		m.designStyles = []colourTheme{}
+		for i := 0; i < 5; i++ {
+			t, _ := NewColourTheme(0)
+			m.designStyles = append(m.designStyles, t)
+		}
+	} else {
+		m.designStyles = temp
+	}
+
+	m.currentStyle = m.designStyles[0]
 
 	return m
 }
@@ -169,7 +168,7 @@ func (m model) View() string {
 	content := fmt.Sprintf("%s\n\n%s", header, body)
 
 	if m.height > 0 && m.width > 0 {
-		return m.designStyles.borderStyleDefault.Render((m.centreStyle.Render(content)))
+		return m.currentStyle.borderStyleDefault.Render((m.centreStyle.Render(content)))
 	}
 
 	return content
@@ -180,9 +179,9 @@ func (m model) renderTabs() string {
 	var out string
 	for i, name := range tabNames {
 		if m.currentTab == tab(i) {
-			out += m.designStyles.tabTextActive.Render(name)
+			out += m.currentStyle.tabTextActive.Render(name)
 		} else {
-			out += m.designStyles.tabTextDefault.Render(name)
+			out += m.currentStyle.tabTextDefault.Render(name)
 		}
 
 	}
@@ -193,9 +192,9 @@ func (m model) renderTabs() string {
 func renderTabContent(m model) string {
 	switch m.currentTab {
 	case tabTyping:
-		return m.typingTab.viewTypingTab(m.designStyles)
+		return m.typingTab.viewTypingTab(m.currentStyle)
 	case tabSettings:
-		return m.settingsTab.viewSettings(m.designStyles)
+		return m.settingsTab.viewSettings(m.currentStyle)
 	case tabHelp:
 		return m.displayHelp()
 	default:
@@ -205,11 +204,11 @@ func renderTabContent(m model) string {
 
 func (m model) displayHelp() string {
 	res := ""
-	res += m.designStyles.normalText.Render("← → to change tabs") + "\n\n"
-	res += m.designStyles.normalText.Render("CTRL C to quit") + "\n\n"
-	res += m.designStyles.normalText.Render("CTRL R restart test") + "\n\n"
-	res += m.designStyles.normalText.Render("TAB toggle new setting") + "\n\n"
-	res += m.designStyles.normalText.Render("↑ ↓ change current setting")
+	res += m.currentStyle.normalText.Render("← → to change tabs") + "\n\n"
+	res += m.currentStyle.normalText.Render("CTRL C to quit") + "\n\n"
+	res += m.currentStyle.normalText.Render("CTRL R restart test") + "\n\n"
+	res += m.currentStyle.normalText.Render("TAB toggle new setting") + "\n\n"
+	res += m.currentStyle.normalText.Render("↑ ↓ change current setting")
 	return res
 }
 
