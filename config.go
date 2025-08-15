@@ -199,5 +199,7 @@ func convertStructs(tc themeConfig) colourTheme {
 	colT.countDownBar = lipgloss.NewStyle().
 		Foreground(lipgloss.Color(tc.CountDownBarColor))
 
+	colT.name = tc.Name
+
 	return colT
 }

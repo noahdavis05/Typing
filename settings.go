@@ -19,7 +19,7 @@ type setting struct {
 	options  []string
 }
 
-func (s *settings) initSettings() {
+func (s *settings) initSettings(styles []colourTheme) {
 	s.mode = gameModeCountdown
 	s.count = 30
 	s.active = 0
@@ -27,6 +27,16 @@ func (s *settings) initSettings() {
 		{title: "Game Mode", position: 0, options: []string{"Time Limit", "Word Limit"}},
 		{title: "Time Limit", position: 1, options: []string{"15", "30", "60", "90", "120"}},
 		{title: "Word Limit", position: 1, options: []string{"15", "30", "50", "60", "100"}},
+		{title: "Theme", position: 0},
+	}
+
+	for i, theme := range styles{
+		if i == 5 {
+			// cannot have more than 5 styles
+			break
+		}
+		s.sets[3].options = append(s.sets[3].options, theme.name)
+
 	}
 }
 
@@ -140,5 +150,7 @@ func (m *model) updateSettingsValues() {
 		m.settingsTab.time, _ = strconv.Atoi(set.options[set.position])
 	case "Word Limit":
 		m.settingsTab.count, _ = strconv.Atoi(set.options[set.position])
+	case "Theme":
+		m.currentStyle = m.designStyles[set.position]
 	}
 }

@@ -5,6 +5,7 @@ import (
 )
 
 type colourTheme struct {
+	name               string
 	borderStyleDefault lipgloss.Style
 	borderStyleActive  lipgloss.Style
 	tabTextDefault     lipgloss.Style

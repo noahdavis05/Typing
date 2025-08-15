@@ -52,7 +52,6 @@ func initialModel() model {
 	}
 
 	m.typingTab.initTyping()
-	m.settingsTab.initSettings()
 
 	// load config
 	temp, err := m.loadConfig()
@@ -68,6 +67,8 @@ func initialModel() model {
 	}
 
 	m.currentStyle = m.designStyles[0]
+
+	m.settingsTab.initSettings(m.designStyles)
 
 	return m
 }
