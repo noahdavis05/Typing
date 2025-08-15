@@ -8,12 +8,13 @@ A terminal-based typing speed test application built with Go and Bubble Tea. Tes
 ## Features
 
 - **Two Game Modes**: 
-  - **Time Limit**: Type as many words as possible within a set time
-  - **Word Limit**: Complete a specific number of words as fast as possible
-- **Real-time Feedback**: See your typing accuracy with color-coded text
-- **Customizable Settings**: Adjust time limits, word counts, and more
-- **WPM Calculation**: Track your words per minute and accuracy
-- **Clean Terminal UI**: Clean interface using Bubble Tea framework
+  - **Time Limit**: Type as many words as possible within a set time.
+  - **Word Limit**: Complete a specific number of words as fast as possible.
+- **Feedback**: View your accuracy with highlighted errors.
+- **Settings**: Customize gamemode, length of rounds, and colour themes.
+- **WPM Calculation**: Track your words per minute and accuracy.
+- **Terminal UI**: Clean interface using Bubble Tea framework.
+- **Customization**: Create and use your own colour and style themes.
 
 ## Installation
 

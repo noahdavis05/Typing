@@ -169,7 +169,7 @@ func (m model) View() string {
 	content := fmt.Sprintf("%s\n\n%s", header, body)
 
 	if m.height > 0 && m.width > 0 {
-		return m.currentStyle.borderStyleDefault.Render((m.centreStyle.Render(content)))
+		return m.currentStyle.borderStyleActive.Render((m.centreStyle.Render(content)))
 	}
 
 	return content
