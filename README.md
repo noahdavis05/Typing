@@ -1,6 +1,6 @@
 # Typing Speed Test
 
-A terminal-based typing speed test application built with Go and Bubble Tea. Test your typing speed and accuracy with customizable settings and real-time feedback.
+A terminal based typing speed test.
 
 ![Go Version](https://img.shields.io/badge/Go-1.19+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -13,7 +13,6 @@ A terminal-based typing speed test application built with Go and Bubble Tea. Tes
 - **Feedback**: View your accuracy with highlighted errors.
 - **Settings**: Customize gamemode, length of rounds, and colour themes.
 - **WPM Calculation**: Track your words per minute and accuracy.
-- **Terminal UI**: Clean interface using Bubble Tea framework.
 - **Customization**: Create and use your own colour and style themes.
 
 ## Installation
@@ -49,13 +48,13 @@ go install repo
 ## Usage
 
 ### Basic Controls
-- **← →** - Navigate between tabs
+- **TAB & SHIFT TAB** - Navigate between tabs
 - **Enter** - Start a new typing test
-- **Ctrl+R** - Restart current test
+- **Ctrl+R** - Start a new typing test
 - **Ctrl+C** - Quit application
 
 ### Settings Tab
-- **Tab** - Switch between different settings (Game Mode, Time, Words)
+- **← →** - Switch between different settings (Game Mode, Time, Words)
 - **↑ ↓** - Change the current setting's value
 
 ### Game Modes
@@ -81,14 +80,6 @@ Complete a specific number of words as quickly as possible:
 - [Lipgloss](https://github.com/charmbracelet/lipgloss) - Styling and layout
 - [Bubbles](https://github.com/charmbracelet/bubbles) - UI components
 
-
-
-### Future Configuration Options
-Future versions will support user-configurable:
-- Custom color schemes
-- Custom word lists
-- Extended statistics tracking
-- Export/import settings
 
 ## Development
 
