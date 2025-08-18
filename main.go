@@ -93,14 +93,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// non tab specific commands
 		case "ctrl+c":
 			return m, tea.Quit
-		case "left":
-			if m.currentTab > 0 {
-				m.currentTab--
-			}
-			return m, cmd
-		case "right":
+		case "tab":
 			if m.currentTab < tab(len(tabNames)-1) {
 				m.currentTab++
+			} else {
+				m.currentTab = 0
+			}
+			return m, cmd
+		case "shift+tab":
+			if m.currentTab > 0 {
+				m.currentTab--
+			} else {
+				m.currentTab = tab(len(tabNames) - 1)
 			}
 			return m, cmd
 		case "ctrl+r":
@@ -205,10 +209,10 @@ func renderTabContent(m model) string {
 
 func (m model) displayHelp() string {
 	res := ""
-	res += m.currentStyle.normalText.Render("← → to change tabs") + "\n\n"
+	res += m.currentStyle.normalText.Render("TAB and SHIFT TAB to change tabs") + "\n\n"
 	res += m.currentStyle.normalText.Render("CTRL C to quit") + "\n\n"
 	res += m.currentStyle.normalText.Render("CTRL R restart test") + "\n\n"
-	res += m.currentStyle.normalText.Render("TAB toggle new setting") + "\n\n"
+	res += m.currentStyle.normalText.Render("← → to toggle new setting") + "\n\n"
 	res += m.currentStyle.normalText.Render("↑ ↓ change current setting")
 	return res
 }

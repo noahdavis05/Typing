@@ -87,13 +87,18 @@ func (s *settings) viewSettings(designStyles colourTheme) string {
 func (m *model) updateSettings(key string) *typing {
 	s := m.settingsTab
 	switch key {
-	case "tab":
+	case "right":
 		s.active += 1
 		if s.active == len(s.sets) {
 			s.active = 0
 		}
 		// now change the actual typing settings
 		return m.typingTab
+	case "left":
+		s.active -= 1
+		if s.active == -1{
+			s.active = len(s.sets) - 1
+		}
 	case "down":
 		// get the setting tab
 		setting := s.sets[s.active]
