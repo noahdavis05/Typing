@@ -5,6 +5,9 @@ A terminal based typing speed test.
 ![Go Version](https://img.shields.io/badge/Go-1.19+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+## Gameplay
+![](example.gif)
+
 ## Features
 
 - **Two Game Modes**: 
